@@ -4,141 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #3b82f6;
-            --text: #f8fafc;
-            --sub-text: #94a3b8;
+            --bg: #0b0e14;
+            --card: #161b22;
+            --accent: #2481cc;
+            --text: #ffffff;
+            --grad: linear-gradient(135deg, #2481cc 0%, #0056b3 100%);
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0; padding: 0;
-            padding-bottom: 80px; /* Для навигации */
+            overflow-x: hidden;
         }
-        .header { padding: 20px; text-align: center; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
-        .header h1 { margin: 0; font-size: 24px; font-weight: 800; color: var(--accent); }
 
-        /* Вкладки */
-        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-
-        /* Карточки товаров */
-        .card {
-            background: var(--card-bg);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* Выбор языка при старте */
+        #lang-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .info span { display: block; }
-        .name { font-weight: 600; font-size: 17px; }
-        .price { color: var(--accent); font-weight: 800; font-size: 18px; margin-top: 5px; }
 
+        .lang-btn {
+            background: var(--grad);
+            border: none; color: white;
+            padding: 15px 40px; margin: 10px;
+            border-radius: 20px; font-weight: 900; font-size: 18px;
+            width: 200px; box-shadow: 0 5px 15px rgba(36, 129, 204, 0.3);
+        }
+
+        /* Главное меню */
+        .container { padding: 15px; display: none; }
+        .active-block { display: block; }
+
+        .header { padding: 20px; text-align: center; font-weight: 900; font-size: 26px; color: var(--accent); }
+
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .cat-card {
+            background: var(--card);
+            border-radius: 25px; padding: 20px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .cat-card img { width: 50px; margin-bottom: 10px; }
+
+        /* Списки товаров */
+        .item-card {
+            background: var(--card);
+            border-radius: 20px; padding: 15px;
+            margin-bottom: 12px; display: flex;
+            justify-content: space-between; align-items: center;
+            border-left: 4px solid var(--accent);
+        }
+        .price { color: var(--accent); font-weight: 900; font-size: 18px; }
         .buy-btn {
-            background: var(--accent);
-            color: white; border: none;
-            padding: 12px 20px;
-            border-radius: 18px;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            background: var(--grad); border: none; color: white;
+            padding: 8px 15px; border-radius: 12px; font-weight: 700;
         }
 
         /* Профиль */
-        .profile-box {
-            background: var(--card-bg);
-            border-radius: 25px;
-            padding: 25px;
-            text-align: center;
-            margin-bottom: 20px;
+        .profile-card {
+            background: var(--card); border-radius: 25px;
+            padding: 25px; text-align: center; margin-bottom: 20px;
         }
-        .user-id { color: var(--sub-text); font-size: 14px; }
-        .balance { font-size: 32px; font-weight: 800; margin: 10px 0; }
+        .profile-info { text-align: left; margin-top: 15px; color: #8b949e; }
+        .profile-info b { color: white; float: right; }
 
-        /* Навигация (Bottom Bar) */
+        /* Отзывы */
+        textarea {
+            width: 100%; background: var(--card); border: 1px solid #30363d;
+            border-radius: 15px; color: white; padding: 10px; box-sizing: border-box;
+            font-family: inherit; margin-top: 10px;
+        }
+
+        /* Bottom Nav */
         .nav {
             position: fixed; bottom: 0; width: 100%;
-            background: #1e293b;
-            display: flex; justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            background: #0d1117; display: flex; justify-content: space-around;
+            padding: 15px 0; border-top: 1px solid #30363d;
         }
-        .nav-item { color: var(--sub-text); text-decoration: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .nav-item { color: #8b949e; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
         .nav-item.active { color: var(--accent); }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1 id="main-title">MANGO SHOP</h1>
+
+    <div id="lang-screen">
+        <h2 style="margin-bottom: 30px;">Выберите язык / Оберіть мову</h2>
+        <button class="lang-btn" onclick="setLang('ru')">Русский</button>
+        <button class="lang-btn" onclick="setLang('ua')">Українська</button>
     </div>
 
-    <div id="shop" class="tab-content active">
-        <h3 style="margin-left: 10px;">🔥 Популярное</h3>
-        <div class="card">
-            <div class="info"><span class="name">60 UC (PUBG)</span><span class="price">43₴</span></div>
-            <button class="buy-btn" onclick="addToCart('60 UC', 43)">Купить</button>
-        </div>
-        <div class="card">
-            <div class="info"><span class="name">100 ⭐ Stars</span><span class="price">80₴</span></div>
-            <button class="buy-btn" onclick="addToCart('100 Stars', 80)">Купить</button>
-        </div>
-    </div>
+    <div id="main-ui" class="container">
+        <div class="header">RAFAL SHOP</div>
 
-    <div id="profile" class="tab-content">
-        <div class="profile-box">
-            <div class="user-id" id="user-name">Загрузка...</div>
-            <div class="balance" id="user-balance">0₴</div>
-            <div style="color:var(--sub-text)">Личный баланс</div>
+        <div id="shop-tab" class="tab-content active-block">
+            <div id="categories">
+                <div class="category-grid">
+                    <div class="cat-card" onclick="showSub('pubg')">
+                        <div style="font-size: 30px;">🎮</div>
+                        <div>PUBG Mobile</div>
+                    </div>
+                    <div class="cat-card" onclick="showSub('tg')">
+                        <div style="font-size: 30px;">🔹</div>
+                        <div>Telegram</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sub-pubg" style="display:none;">
+                <button onclick="backToCats()" style="background:none; border:none; color:var(--accent); font-weight:700; margin-bottom:10px;">← Назад</button>
+                <div class="item-card"><span>60 UC</span><span class="price">43₴</span><button class="buy-btn" onclick="buy('60 UC', 43)">Купить</button></div>
+                <div class="item-card"><span>325 UC</span><span class="price">195₴</span><button class="buy-btn" onclick="buy('325 UC', 195)">Купить</button></div>
+                <div class="item-card"><span>660 UC</span><span class="price">390₴</span><button class="buy-btn" onclick="buy('660 UC', 390)">Купить</button></div>
+            </div>
+
+            <div id="sub-tg" style="display:none;">
+                <button onclick="backToCats()" style="background:none; border:none; color:var(--accent); font-weight:700; margin-bottom:10px;">← Назад</button>
+                <div class="item-card"><span>100 ⭐ Stars</span><span class="price">80₴</span><button class="buy-btn" onclick="buy('100 Stars', 80)">Купить</button></div>
+                <div class="item-card"><span>Premium 3 мес</span><span class="price">450₴</span><button class="buy-btn" onclick="buy('Premium 3m', 450)">Купить</button></div>
+            </div>
         </div>
-        <div class="card">
-            <span>Заказов совершено</span>
-            <span style="font-weight: 800;">0</span>
+
+        <div id="profile-tab" class="tab-content" style="display:none;">
+            <div class="profile-card">
+                <div style="font-size: 50px; margin-bottom: 10px;">👤</div>
+                <div id="p-username" style="font-weight:900; font-size:20px;">@user</div>
+                <div class="profile-info">
+                    ID: <b id="p-id">000000</b><br><br>
+                    Язык: <b id="p-lang">RU</b><br><br>
+                    Баланс: <b style="color:var(--accent)">0.00₴</b>
+                </div>
+            </div>
+        </div>
+
+        <div id="reviews-tab" class="tab-content" style="display:none;">
+            <h3>Оставить отзыв</h3>
+            <textarea id="rev-text" rows="5" placeholder="Напишите ваше мнение..."></textarea>
+            <button class="lang-btn" style="width:100%; margin:20px 0;" onclick="sendReview()">Отправить</button>
         </div>
     </div>
 
     <nav class="nav">
-        <div class="nav-item active" onclick="openTab('shop', this)">🛒 Магазин</div>
-        <div class="nav-item" onclick="openTab('profile', this)">👤 Профиль</div>
+        <div class="nav-item active" onclick="switchTab('shop-tab', this)">🛒 Магазин</div>
+        <div class="nav-item" onclick="switchTab('profile-tab', this)">👤 Профиль</div>
+        <div class="nav-item" onclick="switchTab('reviews-tab', this)">💬 Отзывы</div>
     </nav>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
-        
-        // Установка данных профиля из ТГ
-        document.getElementById('user-name').innerText = "@" + (tg.initDataUnsafe.user.username || "user");
-        
-        let cart = [];
+        let currentLang = 'ru';
 
-        function openTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('lang-screen').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+            document.getElementById('p-lang').innerText = lang.toUpperCase();
+            document.getElementById('p-username').innerText = "@" + (tg.initDataUnsafe.user.username || "Guest");
+            document.getElementById('p-id').innerText = tg.initDataUnsafe.user.id;
+        }
+
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(id).style.display = 'block';
             el.classList.add('active');
             tg.HapticFeedback.selectionChanged();
         }
 
-        function addToCart(name, price) {
-            cart.push({item: name, price: price});
-            tg.MainButton.setText(`ОПЛАТИТЬ ЗАКАЗ: ${price}₴`);
-            tg.MainButton.show();
-            tg.MainButton.setParams({color: "#3b82f6"});
-            tg.HapticFeedback.impactOccurred('medium');
+        function showSub(cat) {
+            document.getElementById('categories').style.display = 'none';
+            document.getElementById('sub-' + cat).style.display = 'block';
         }
 
-        tg.MainButton.onClick(() => {
-            tg.sendData(JSON.stringify({order: cart, type: "checkout"}));
-        });
+        function backToCats() {
+            document.getElementById('sub-pubg').style.display = 'none';
+            document.getElementById('sub-tg').style.display = 'none';
+            document.getElementById('categories').style.display = 'block';
+        }
+
+        function buy(name, price) {
+            tg.sendData(JSON.stringify({action: 'buy', item: name, price: price}));
+        }
+
+        function sendReview() {
+            let txt = document.getElementById('rev-text').value;
+            if(txt.length < 5) return alert("Слишком короткий отзыв!");
+            tg.sendData(JSON.stringify({action: 'review', text: txt}));
+            alert("Отзыв отправлен админу!");
+            document.getElementById('rev-text').value = "";
+        }
     </script>
 </body>
-</html>
+    </html>
+    
