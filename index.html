@@ -2,94 +2,142 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --main-blue: #2481cc;
-            --bg-color: #f0f2f5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #3b82f6;
+            --text: #f8fafc;
+            --sub-text: #94a3b8;
         }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0; padding: 15px;
-            color: #333;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 0;
+            padding-bottom: 80px; /* Для навигации */
         }
-        .container { display: flex; flex-direction: column; gap: 15px; }
-        .section-title { font-weight: 800; font-size: 20px; margin: 10px 0 5px; color: #222; }
-        
+        .header { padding: 20px; text-align: center; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 800; color: var(--accent); }
+
+        /* Вкладки */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+
         /* Карточки товаров */
         .card {
-            background: white;
-            border-radius: 20px; /* Сильное закругление */
-            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .card:active { transform: scale(0.97); }
-        .info { display: flex; flex-direction: column; }
-        .name { font-weight: 600; font-size: 16px; }
-        .price { color: var(--main-blue); font-weight: 700; margin-top: 4px; }
-        
-        /* Синяя кнопка */
+        .info span { display: block; }
+        .name { font-weight: 600; font-size: 17px; }
+        .price { color: var(--accent); font-weight: 800; font-size: 18px; margin-top: 5px; }
+
         .buy-btn {
-            background-color: var(--main-blue);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 15px;
-            font-weight: 600;
-            cursor: pointer;
+            background: var(--accent);
+            color: white; border: none;
+            padding: 12px 20px;
+            border-radius: 18px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
 
-        /* Анимация появления */
-        .card { animation: fadeInUp 0.5s ease forwards; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Профиль */
+        .profile-box {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
         }
+        .user-id { color: var(--sub-text); font-size: 14px; }
+        .balance { font-size: 32px; font-weight: 800; margin: 10px 0; }
+
+        /* Навигация (Bottom Bar) */
+        .nav {
+            position: fixed; bottom: 0; width: 100%;
+            background: #1e293b;
+            display: flex; justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-item { color: var(--sub-text); text-decoration: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .nav-item.active { color: var(--accent); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="section-title">🎮 PUBG Mobile</div>
-        <div class="card">
-            <div class="info"><span class="name">60 UC</span><span class="price">43₴</span></div>
-            <button class="buy-btn" onclick="addToCart('60 UC', 43, 'uc')">В корзину</button>
-        </div>
-        <div class="card">
-            <div class="info"><span class="name">325 UC</span><span class="price">195₴</span></div>
-            <button class="buy-btn" onclick="addToCart('325 UC', 195, 'uc')">В корзину</button>
-        </div>
+    <div class="header">
+        <h1 id="main-title">MANGO SHOP</h1>
+    </div>
 
-        <div class="section-title">🔹 Telegram</div>
+    <div id="shop" class="tab-content active">
+        <h3 style="margin-left: 10px;">🔥 Популярное</h3>
+        <div class="card">
+            <div class="info"><span class="name">60 UC (PUBG)</span><span class="price">43₴</span></div>
+            <button class="buy-btn" onclick="addToCart('60 UC', 43)">Купить</button>
+        </div>
         <div class="card">
             <div class="info"><span class="name">100 ⭐ Stars</span><span class="price">80₴</span></div>
-            <button class="buy-btn" onclick="addToCart('100 Stars', 80, 'stars')">В корзину</button>
-        </div>
-        <div class="card">
-            <div class="info"><span class="name">Premium 3 мес</span><span class="price">450₴</span></div>
-            <button class="buy-btn" onclick="addToCart('Prem 3 мес', 450, 'premium')">В корзину</button>
+            <button class="buy-btn" onclick="addToCart('100 Stars', 80)">Купить</button>
         </div>
     </div>
+
+    <div id="profile" class="tab-content">
+        <div class="profile-box">
+            <div class="user-id" id="user-name">Загрузка...</div>
+            <div class="balance" id="user-balance">0₴</div>
+            <div style="color:var(--sub-text)">Личный баланс</div>
+        </div>
+        <div class="card">
+            <span>Заказов совершено</span>
+            <span style="font-weight: 800;">0</span>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-item active" onclick="openTab('shop', this)">🛒 Магазин</div>
+        <div class="nav-item" onclick="openTab('profile', this)">👤 Профиль</div>
+    </nav>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // Установка данных профиля из ТГ
+        document.getElementById('user-name').innerText = "@" + (tg.initDataUnsafe.user.username || "user");
+        
         let cart = [];
 
-        function addToCart(name, price, cat) {
-            cart.push({item: name, price: price, category: cat});
-            tg.MainButton.setText(`ОФОРМИТЬ ЗАКАЗ (${cart.length})`);
+        function openTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function addToCart(name, price) {
+            cart.push({item: name, price: price});
+            tg.MainButton.setText(`ОПЛАТИТЬ ЗАКАЗ: ${price}₴`);
             tg.MainButton.show();
+            tg.MainButton.setParams({color: "#3b82f6"});
             tg.HapticFeedback.impactOccurred('medium');
         }
 
         tg.MainButton.onClick(() => {
-            tg.sendData(JSON.stringify(cart)); // Отправляет данные боту
+            tg.sendData(JSON.stringify({order: cart, type: "checkout"}));
         });
     </script>
 </body>
